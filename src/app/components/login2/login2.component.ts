@@ -1,43 +1,57 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ServiceEmpleados } from 'src/app/services/service.empleados';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-login2',
   templateUrl: './login2.component.html',
   styleUrls: ['./login2.component.css'],
 })
-export class LoginComponent2 {
-  usuario: string = "";
-  password: string = "";
-  loginCorrecto: boolean = false;
-  loginIncorrecto: boolean = false;
 
-  constructor(private service: ServiceEmpleados) {}
+export class LoginComponent2  {
 
-  login() {
-    // Llama a autorizarAcceso y maneja la promesa
-    this.service.autorizarAcceso(this.usuario, this.password)
-      .subscribe((response) => {
-          console.log('Usuario:', this.usuario);
-          console.log('Password:', this.password);
+  @ViewChild('cajaUsername') cajaUsernameRef!: ElementRef;
+  @ViewChild('cajaPassword') cajaPasswordRef!: ElementRef;
 
-          // Asigna el token directamente a environment.token
-          environment.token = response && response.response;
+  public mensaje = '';
+  public loginCorrecto: boolean = false;
+  public loginIncorrecto: boolean = false;
 
-          console.log('TOKEN: ' + environment.token);
+  constructor(
+    private serviceEmpleados: ServiceEmpleados,
+    private _router: Router
+    ) {}
 
-          // Cambia el estado para mostrar el mensaje de éxito
-          this.loginCorrecto = true;
-          this.loginIncorrecto = false;
-        },
-        error => {
-          console.error('Error al autorizar acceso:', error);
+  login(): void {
 
-          // Cambia el estado para mostrar el mensaje de error
-          this.loginCorrecto = false;
-          this.loginIncorrecto = true;
-        }
-      );
+
+    var username = this.cajaUsernameRef.nativeElement.value;
+    var password = this.cajaPasswordRef.nativeElement.value;
+
+    this.serviceEmpleados.autorizarAcceso(username,password).subscribe(
+      (data) => {
+
+
+        environment.token = data.response;
+        this.loginCorrecto = true;
+        this.loginIncorrecto = false;
+        console.log("Usuario:", username);
+        console.log("Password:", password);
+        console.log("TOKEN: " + environment.token);
+
+      },
+      (error) => {
+        console.error(error);
+        this.loginCorrecto = false;
+        this.loginIncorrecto = true;
+        console.log("Usuario:", username);
+        console.log("Password:", password);
+        console.log("TOKEN: " + environment.token);
+      }
+    );
   }
+
+
 }
+

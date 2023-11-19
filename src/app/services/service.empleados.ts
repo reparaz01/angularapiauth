@@ -17,7 +17,7 @@ export class ServiceEmpleados {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
     const request = 'auth/login';
     const url = environment.urlApi + request;
-
+    
     return this._http.post(url, json, { headers: headers });
   }
 
